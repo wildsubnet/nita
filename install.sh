@@ -42,6 +42,9 @@ PATH=${PATH}:${JAVA_HOME}/bin
 export OWNER_HOME=`egrep "^${REALUSER}" /etc/passwd | awk -F: '{print $6}'`
 export PATH NITAROOT KUBEROOT K8SROOT PROXY CERTS JENKINS KEYPASS KUBECONFIG JAVA_HOME
 
+ANSIBLE_IMAGE="ghcr.io/juniper/nita-ansible:latest"
+ROBOT_IMAGE="ghcr.io/juniper/nita-robot:latest"
+
 Question () {
     DEFAULT_ANSWER="${2:-y}"
     # Ask a yes/no/quit question. Default answer is "Yes" or what is given as a parameter 2
@@ -445,6 +448,28 @@ Question "Do you want to run Ansible as a standalone Docker container" && {
 
     echo "${ME}: Adding user \"${REALUSER}\" to the docker group"
     usermod -aG docker ${REALUSER}
+
+}
+
+Question "Do you want to pull the latest Ansible and Robot images as docker images?" && {
+
+
+
+    # Docker must be available to pull and save images
+
+    if [ ! -x "$(command -v docker)" ]; then
+        echo "${ME}: Error: Docker is not installed. Please run the standalone Docker container step first."
+    else
+
+        echo "${ME}: Pulling ${ANSIBLE_IMAGE}"
+        docker pull ${ANSIBLE_IMAGE}
+
+        echo "${ME}: Pulling ${ROBOT_IMAGE}"
+        docker pull ${ROBOT_IMAGE}
+
+        echo "${ME}: Images pulled successfully"
+
+    fi
 
 }
 
